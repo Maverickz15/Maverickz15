@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GST 102 – Exam Practice (60 Questions)</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --card: #111827;
+    --ink: #e5e7eb;
+    --muted: #94a3b8;
+    --accent: #7c3aed;
+    --accent-2: #22c55e;
+    --wrong: #ef4444;
+    --right: #22c55e;
+    --chip: #1f2937;
+  }
+  html, body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji"; background: var(--bg); color: var(--ink);}
+  .wrap { max-width: 920px; margin: 0 auto; padding: 24px; }
+  header { display:flex; gap:16px; align-items:flex-start; flex-wrap: wrap; }
+  header h1 { margin:0; font-size: 1.6rem; line-height:1.2; }
+  header .meta { color: var(--muted); font-size: .95rem; }
+  .controls { display:flex; gap:8px; flex-wrap: wrap; margin-top: 8px; }
+  button, select { background: var(--chip); color: var(--ink); border: 1px solid #334155; padding: 10px 14px; border-radius: 10px; cursor: pointer; }
+  button:hover { border-color: var(--accent); }
+  .grid { display:grid; grid-template-columns: 1fr; gap:16px; margin-top: 18px; }
+  @media (min-width: 760px){ .grid { grid-template-columns: 1fr 1fr; } }
+  .card { background: var(--card); border: 1px solid #1f2937; border-radius: 16px; padding: 16px; }
+  .qhead { display:flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .qnum { font-weight: 700; color: var(--muted); }
+  .qtxt { margin: 8px 0 10px; font-size: 1rem; }
+  .opts { display:flex; flex-direction: column; gap: 8px; }
+  .opt { display:flex; gap:10px; align-items: flex-start; background:#0b1220; border:1px solid #1f2937; border-radius: 12px; padding: 10px; cursor:pointer; }
+  .opt input { margin-top: 3px; }
+  .opt.correct { border-color: var(--right); }
+  .opt.wrong { border-color: var(--wrong); }
+  .explain { margin-top: 8px; color: var(--muted); font-size: .95rem; display:none; }
+  .chip { background: var(--chip); color: var(--muted); padding: 4px 8px; border-radius: 999px; font-size: .8rem; }
+  .foot { margin-top: 18px; display:flex; justify-content: space-between; align-items:center; flex-wrap: wrap; gap: 8px; }
+  .score { font-weight:700; }
+  .hidden { display:none; }
+  .search { margin-top:12px; display:flex; gap:8px; }
+  .search input { flex:1; background:#0b1220; color: var(--ink); border:1px solid #334155; border-radius:10px; padding:10px 12px; }
+  .legend { display:flex; gap:10px; align-items:center; color: var(--muted); font-size:.9rem; }
+  .legend .tag { width:10px; height:10px; border-radius:3px; display:inline-block; }
+  .tag-right { background: var(--right); }
+  .tag-wrong { background: var(--wrong); }
+  .pill { background:#172554; padding:3px 8px; border-radius:999px; font-size:.8rem; color:#c7d2fe; border:1px solid #1e3a8a; }
+  .subject { margin-left:auto; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+  a { color: #a78bfa; text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>GST 102 – Exam Practice (60 Questions)</h1>
+      <div class="meta"> Prepared by MAVERICK </div>
+      <div class="controls">
+        <button id="start">Start quiz</button>
+        <button id="shuffle">Shuffle</button>
+        <button id="reset">Reset</button>
+        <select id="mode">
+          <option value="practice">Practice mode (show feedback per question)</option>
+          <option value="exam">Exam mode (feedback at the end)</option>
+        </select>
+        <select id="filter">
+          <option value="all">All topics</option>
+          <option value="morphology">Morphology & word formation</option>
+          <option value="outlining">Outlining</option>
+          <option value="brainstorming">Brainstorming</option>
+          <option value="email">Email etiquette</option>
+          <option value="interference">Language interference & code-mixing</option>
+          <option value="literature">Literature</option>
+        </select>
+      </div>
+      <div class="search">
+        <input id="search" type="search" placeholder="Search questions or options..." />
+        <span class="pill mono" id="timer">00:00</span>
+        <span class="pill" id="progress">0 / 60</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="legend" style="margin-top:10px;">
+    <span><span class="tag tag-right"></span> correct</span>
+    <span><span class="tag tag-wrong"></span> wrong</span>
+  </div>
+
+  <main class="grid" id="quiz"></main>
+
+  <footer class="foot">
+    <div class="score" id="score">Score: —</div>
+    <div class="subject">Share: <span class="mono">GST 102 quiz (by Maverick) </span></div>
+  </footer>
+</div>
+
+<script>
+const DATA = [
+  // topic: morphology
+  {n:1, q:'In the hierarchical structure of grammatical units, which unit ranks directly below the "word"?', a:['Clause','Group','Morpheme','Sentence'], c:2, t:'morphology'},
+  {n:2, q:'The word "internationally" features which of the following structural combinations?', a:['One prefix and one suffix','One prefix and two suffixes','Two prefixes and one suffix','Two prefixes and two suffixes'], c:1, t:'morphology'},
+  {n:3, q:'When a prefix is attached to a base word in English, what usually happens to the base word?', a:['Both its spelling and word class change','Its word class changes but the meaning stays identical','Its spelling changes but the word class remains stable','Its meaning changes but its spelling and word class do not change'], c:3, t:'morphology'},
+  {n:4, q:'According to Quirk and Greenbaum (1973), what type of prefix are "un-" (unlock) and "de-" (defrost)?', a:['Negative','Pejorative','Reservative or Privative','Attitude'], c:2, t:'morphology'},
+  {n:5, q:'Prefixes such as "mal-" (maltreat) and "mis-" (mismanage) are classified under which semantic category?', a:['Degree','Pejorative','Locative','Number'], c:1, t:'morphology'},
+  {n:6, q:'What is the defining characteristic of a derivational suffix?', a:['Purely grammatical, no class change','Alters only number/tense','Can change the word class of the base','Always keeps base meaning'], c:2, t:'morphology'},
+  {n:7, q:'The suffix "-en" in the word "frighten" serves as what type of morphological tool?', a:['Noun derivational suffix','Verb derivational suffix','Adjective derivational suffix','Inflectional suffix'], c:1, t:'morphology'},
+  {n:8, q:'Inflectional suffixes differ from derivational suffixes because inflectional suffixes:', a:['Create entirely new words','Change a noun into a dynamic verb','Indicate number, tense, aspect, or degree','Shift stress patterns'], c:2, t:'morphology'},
+  {n:9, q:'Combining "head" and "master" to create "headmaster" exemplifies:', a:['Conversion','Blending','Compounding','Reduplication'], c:2, t:'morphology'},
+  {n:10, q:'The process where a word changes its class without modifying its form (e.g., butter → buttered) is:', a:['Clipping','Coinage','Conversion','Phonoaesthesis'], c:2, t:'morphology'},
+  {n:11, q:'Taking the beginning of one word and the end of another (Smog, Brunch) is:', a:['Compounding','Blending','Acronym','Borrowing'], c:1, t:'morphology'},
+  {n:12, q:'Reducing "refrigerator" to "fridge" or "influenza" to "flu" is:', a:['Clipping','Coinage','Reduplication','Conversion'], c:0, t:'morphology'},
+
+  // outlining
+  {n:13, q:'Joffe (1982) explicitly identifies how many primary functions of an outline?', a:['Three','Four','Five','Six'], c:1, t:'outlining'},
+  {n:14, q:'Which outline uses phrases or single words for divisions?', a:['Sentence Outline','Paragraph Outline','Topic Outline','Comprehensive Outline'], c:2, t:'outlining'},
+  {n:15, q:'Disadvantage of a sentence outline vs topic outline?', a:['Less clarity','More time-consuming','Cannot be used for complex essays','Mixes phrases and fragments'], c:1, t:'outlining'},
+  {n:16, q:'A "Paragraph Outline" functions primarily as a:', a:['Brainstorming checklist','Graphic mapping template','Summarizing device of topic sentences','Rulebook for notation'], c:2, t:'outlining'},
+  {n:17, q:'Which term precisely encompasses father, brother, husband, grandfather, and uncles?', a:['Men','Adults','Human beings','Males'], c:3, t:'outlining'},
+  {n:18, q:'In standard outline notation, which marks the most important major ideas at the far left?', a:['Capital Letters (A, B, C)','Arabic Numbers (1, 2, 3)','Roman Numerals (I, II, III)','Lower-case Letters (a, b, c)'], c:2, t:'outlining'},
+  {n:19, q:'Major details to the right are labeled with:', a:['Arabic numbers','Capital letters','Roman numerals','Lower-case letters'], c:1, t:'outlining'},
+  {n:20, q:'Correct notation sequence left to right:', a:['I → 1 → A → a','I → A → 1 → a','A → I → a → 1','1 → a → I → A'], c:1, t:'outlining'},
+  {n:21, q:'Which structural rule must be enforced in one outline?', a:['Majors use sentences; minors use phrases','Never mix phrases and sentences in same outline','Every line ends with a question mark','Symbols are optional'], c:1, t:'outlining'},
+  {n:22, q:'Formal mechanics rule for notation symbols in outlines:', a:['Always place a period after each symbol','Enclose Roman numerals in parentheses','Leave symbols unpunctuated','Capitalize alternate letters only'], c:0, t:'outlining'},
+  {n:23, q:'In decimal outlining, a direct subdivision of 2.3 is:', a:['2.3a','2.3.1','2.4','3.2'], c:1, t:'outlining'},
+  {n:24, q:'A highly effective outline is marked by:', a:['Length and dense annotations','Rhetorical flourishes','Brevity, clarity, accuracy, order, ease of recall','No formatting'], c:2, t:'outlining'},
+
+  // brainstorming
+  {n:25, q:'Who developed structured brainstorming in 1942?', a:['Terry Eagleton','Alex F. Osborn','Quirk and Greenbaum','Rene Wellek'], c:1, t:'brainstorming'},
+  {n:26, q:'Ideal group size for productive brainstorming:', a:['1–2','3–9','10–15','20+'], c:1, t:'brainstorming'},
+  {n:27, q:'Why forbid criticism during brainstorming?', a:['Makes session too long','Interrupts creative flow and causes withdrawal','Ideas are final solutions','Facilitators cannot speak'], c:1, t:'brainstorming'},
+  {n:28, q:'Active ideation focus:', a:['Quality over quantity','Quantity over quality','Grammatical precision','Immediate cost analysis'], c:1, t:'brainstorming'},
+  {n:29, q:'Technique that solicits exactly one idea per member in order:', a:['Free-form','Silent','Structured','Electronic'], c:2, t:'brainstorming'},
+  {n:30, q:'Limitation of Structured brainstorming:', a:['Allows domination','Lacks spontaneity; can feel rigid','Eliminates privacy','Not usable commercially'], c:1, t:'brainstorming'},
+  {n:31, q:'Primary advantage of Silent brainstorming:', a:['Rapid spoken arguments','Forces turn-based speech','Prevents disruptive analysis; provides confidentiality','No writing needed'], c:2, t:'brainstorming'},
+  {n:32, q:'Utility of group over individual brainstorming:', a:['Less planning','Less susceptible to inhibitions','Diverse experiences widen ideas; builds camaraderie','Only for simple problems'], c:2, t:'brainstorming'},
+  {n:33, q:'Asynchronous/anonymous idea generation via networks is:', a:['Mind Mapping','Team Idea Mapping','Electronic Brainstorming (Brain Netting)','Group Passing'], c:2, t:'brainstorming'},
+  {n:34, q:'Variation producing queries rather than solutions:', a:['Question Brainstorming','Silent','Free-writing','Clustering'], c:0, t:'brainstorming'},
+  {n:35, q:'Mapping/webbing with branches from a central word is:', a:['Listing','Note-taking','Outlining','Clustering'], c:3, t:'brainstorming'},
+  {n:36, q:'Free writing requires:', a:['Meticulous editing for 30 mins','Write nonstop ~5 mins without stopping or self-editing','Collect quotes from books','Arrange into Roman numerals immediately'], c:1, t:'brainstorming'},
+
+  // email etiquette
+  {n:37, q:'In email, BCC stands for:', a:['Business Carbon Copy','Blind Carbon Copy','Basic Communication Code','Broad Client Copy'], c:1, t:'email'},
+  {n:38, q:'Unsolicited promotional messages are filtered to:', a:['DRAFT','INBOX','SPAM','SENT'], c:2, t:'email'},
+  {n:39, q:'Why does email improve efficiency in a university?', a:['Automated phone follow-ups','Cuts bureaucracy and malicious filtering by intermediaries','Requires expensive data installs','Turns chats into legal contracts'], c:1, t:'email'},
+  {n:40, q:'One sender to a large list of newsletter subscribers is:', a:['Transactional','One-on-One','One-to-Many','Informal chat'], c:2, t:'email'},
+  {n:41, q:'A formal email profile uses:', a:['Slang and abbreviations','No greetings/closings','Proper salutations, business-like language','Tone for family members only'], c:2, t:'email'},
+  {n:42, q:'Why avoid typing the recipient address early?', a:['Corrupts format','Prevents sending an incomplete/error draft by accident','Blocks saving to DRAFT','Routes to SPAM'], c:1, t:'email'},
+  {n:43, q:'When applying for admission or roles, certificates should be sent:', a:['As clear attachments with explanatory body','Empty message with no subject','Raw text inside body','Physical courier only'], c:0, t:'email'},
+  {n:44, q:'Ideal professional email reply timeline:', a:['Within 20 minutes','Within 24 hours','Exactly 5 working days','Within a month'], c:1, t:'email'},
+  {n:45, q:'Recommended font pairs for cross-device readability:', a:['Comic Sans & Impact','Times New Roman & Calibri','Arial & Gothic','Script & Courier New'], c:1, t:'email'},
+
+  // interference & code-mixing
+  {n:46, q:'Linguistic "interference" is when:', a:['Speaker forgets native language','Two languages overlap and traits transfer','Student passes an English exam','Speaker switches accents in a play'], c:1, t:'interference'},
+  {n:47, q:'Retroactive interference occurs when:', a:['Facilitates positive acquisition','Absence of L1 sounds makes L2 sounds difficult/negative','Occurs only between two European languages','Bypasses phonology'], c:1, t:'interference'},
+  {n:48, q:'Using "They are calling you" for a single elderly person is:', a:['Phonological interference','Grammatical interference','Lexical interference','Alternational code-switching'], c:1, t:'interference'},
+  {n:49, q:'"Dowry" in BE vs NE:', a:['BE: property by man; NE: by woman','BE: money paid by woman to husband; NE: money paid by man to marry a woman','BE: festive reincarnation; NE: sibling tracking','No difference'], c:1, t:'interference'},
+  {n:50, q:'Code-mixing is:', a:['Mastery of one native tongue','Switching languages only across sentences','Using two+ languages within a single utterance/conversation','Translate to ancient Chinese'], c:2, t:'interference'},
+  {n:51, q:'Switching cleanly at sentence boundaries is:', a:['Phonological interference','Inter-sentential switching','Tag-switching','Intra-word switching'], c:1, t:'interference'},
+  {n:52, q:'Muysken (2000) types of code-mixing:', a:['Interference, Borrowing, Coinage','Segmental, Suprasegmental, Honorific','Insertion, Alternation, Congruent Lexicalization','Prefixation, Suffixation, Compounding'], c:2, t:'interference'},
+
+  // literature
+  {n:53, q:'"Literature" traces to Latin "litteratura" meaning:', a:['Artistic performance','Writing or the letter','Emotional imitation','Musical composition'], c:1, t:'literature'},
+  {n:54, q:'Nnolim (2004) separates documentation into:', a:['Prose & Verse','Literature of Knowledge & Literature of Power','Literature of Fact & History','Conventional & Performance Literature'], c:1, t:'literature'},
+  {n:55, q:'According to Nnolim, math/geography/manuals are:', a:['Literature of Power','Literature of Knowledge','Imaginative Artistry','Aesthetic Fictionality'], c:1, t:'literature'},
+  {n:56, q:'Why reject Britannica’s definition of literature?', a:['Foreign language','Too old','Misses figurative language, connotation, symbols, imagination','Includes oral performance'], c:2, t:'literature'},
+  {n:57, q:'Which group said "Literature is organized violence on ordinary speech"?', a:['Russian Formalists','British Rhetoricians','Ancient Greek Historians','African Oral Narrators'], c:0, t:'literature'},
+  {n:58, q:'Terry Eagleton: literature is defined because it:', a:['Avoids text blocks','Re-creates court logs','Uses language in highly particular ways','Documents family metrics'], c:2, t:'literature'},
+  {n:59, q:'Finnegan: conventional literature is writing; oral literature is realized through:', a:['Static ink diagrams','Performance','Graphic mapping','Email'], c:1, t:'literature'},
+  {n:60, q:'Okoh (2008): the foremost capability of literature is to:', a:['Ensure fast exam success','Shape, influence, and humanize us','Enforce notation frameworks','Displace mother-tongue phonology'], c:1, t:'literature'}
+];
+
+// Optional short explanations (minimal, aligned with answers)
+const WHY = {
+  1:'Morphemes are the smallest meaningful units below words.',
+  2:'Inter- (prefix) + nation + -al (adj suffix) + -ly (adv suffix).',
+  3:'Prefixes usually change meaning; spelling/word class often remain.',
+  4:'Un-/de- can reverse or remove an action/state (privative).',
+  5:'Mis-/mal- add a negative/pejorative sense.',
+  6:'Derivational suffixes can change word class (e.g., -ness, -ify).',
+  7:'-en forms verbs from adjectives/nouns (e.g., harden, widen).',
+  8:'Inflection marks grammar (tense/number) without creating new lexemes.',
+  9:'Compounding joins full bases into a new word.',
+  10:'Conversion changes class without form change.',
+  11:'Blends splice parts of words (smoke+fog).',
+  12:'Clipping shortens existing words.',
+  13:'Joffe lists four functions.',
+  14:'Topic outlines list ideas as brief headings.',
+  15:'Writing all sentences takes longer.',
+  16:'Each paragraph’s topic sentence summarized.',
+  17:'Males precisely covers the set listed.',
+  18:'Roman numerals denote top-level heads.',
+  19:'Capital letters mark major details.',
+  20:'I → A → 1 → a is standard.',
+  21:'Choose phrases or sentences, but don’t mix within one outline.',
+  22:'e.g., I. A. 1. a.',
+  23:'Decimal expansion adds another point and digit.',
+  24:'Good outlines are concise, clear, accurate, ordered, memorable.',
+  25:'Alex F. Osborn popularized brainstorming.',
+  26:'Small, diverse groups 3–9 work best.',
+  27:'Criticism blocks idea flow.',
+  28:'Generate many ideas first; evaluate later.',
+  29:'Structured turn-taking yields one idea per person.',
+  30:'Less spontaneous; may feel rigid.',
+  31:'Reduces pressure, enables privacy.',
+  32:'More perspectives = more ideas and team bonds.',
+  33:'Ideas via networked tools asynchronously.',
+  34:'Ask many questions to reframe the problem.',
+  35:'Clustering/webbing radiates from a central node.',
+  36:'Write continuously without editing to unlock ideas.',
+  37:'Blind Carbon Copy hides recipients.',
+  38:'Spam filters catch unsolicited promos.',
+  39:'Direct, documented comms remove middlemen.',
+  40:'One-to-many broadcast.',
+  41:'Formal tone, clear salutations/closings.',
+  42:'Avoids premature sends.',
+  43:'Attach clean scans; explain purpose in body.',
+  44:'Within 24 hours is professional.',
+  45:'Widely supported, readable fonts.',
+  46:'Cross-language influence causes transfer.',
+  47:'Missing L1 sounds hinder L2 acquisition.',
+  48:'Number/person agreement error (grammar).',
+  49:'Different conventional meanings in BE vs NE.',
+  50:'Mixing codes within an utterance.',
+  51:'Switching across sentence boundaries.',
+  52:'Muysken’s three mechanisms.',
+  53:'From Latin for letters/writing.',
+  54:'Knowledge vs Power distinction.',
+  55:'Referential/instructional works = Knowledge.',
+  56:'Definition omits key literary features.',
+  57:'Signature view of Russian Formalism.',
+  58:'Focus on language use, not fictionality.',
+  59:'Oral literature is performed.',
+  60:'Literature cultivates humaneness.'
+};
+
+let order = [...DATA.keys()];
+let answered = new Map();
+let started = false;
+let examMode = false;
+let timerId = null, startMs = null;
+
+const el = (sel) => document.querySelector(sel);
+const quiz = el('#quiz');
+
+function fmtTime(ms){
+  const s = Math.floor(ms/1000);
+  const mm = String(Math.floor(s/60)).padStart(2,'0');
+  const ss = String(s%60).padStart(2,'0');
+  return `${mm}:${ss}`;
+}
+
+function startTimer(){
+  if (timerId) return;
+  startMs = Date.now();
+  timerId = setInterval(()=>{
+    el('#timer').textContent = fmtTime(Date.now() - startMs);
+  }, 200);
+}
+
+function stopTimer(){
+  clearInterval(timerId);
+  timerId = null;
+}
+
+function shuffle(){
+  for (let i = order.length -1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+}
+
+function render(){
+  quiz.innerHTML = '';
+  const term = el('#search').value.trim().toLowerCase();
+  const filter = el('#filter').value;
+  let shown = 0;
+
+  for (const idx of order){
+    const d = DATA[idx];
+    if (filter !== 'all' && d.t !== filter) continue;
+
+    if (term){
+      const hay = (d.q + ' ' + d.a.join(' ')).toLowerCase();
+      if (!hay.includes(term)) continue;
+    }
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.index = idx;
+
+    const h = document.createElement('div');
+    h.className = 'qhead';
+    h.innerHTML = `<div class="qnum">Q${d.n}</div><span class="chip">${labelTopic(d.t)}</span>`;
+    card.appendChild(h);
+
+    const qt = document.createElement('div');
+    qt.className = 'qtxt';
+    qt.textContent = d.q;
+    card.appendChild(qt);
+
+    const opts = document.createElement('div');
+    opts.className = 'opts';
+
+    d.a.forEach((txt, i) => {
+      const opt = document.createElement('label');
+      opt.className = 'opt';
+      opt.innerHTML = `<input type="radio" name="q-${idx}" value="${i}" /> <div>${"ABCD".charAt(i)}. ${txt}</div>`;
+      opt.addEventListener('click', (e)=>{
+        // allow label click without double-firing
+        if (e.target.tagName !== 'INPUT') {
+          opt.querySelector('input').checked = true;
+        }
+        onAnswer(idx, i, opt, card);
+      });
+      opts.appendChild(opt);
+    });
+
+    card.appendChild(opts);
+
+    const why = document.createElement('div');
+    why.className = 'explain';
+    why.textContent = WHY[d.n] || '';
+    card.appendChild(why);
+
+    quiz.appendChild(card);
+    shown++;
+  }
+
+  el('#progress').textContent = `${answered.size} / ${DATA.length}`;
+  updateScore();
+  if (shown === 0) {
+    const empty = document.createElement('div');
+    empty.className = 'card';
+    empty.textContent = 'No questions match your search/filter.';
+    quiz.appendChild(empty);
+  }
+}
+
+function labelTopic(t){
+  switch(t){
+    case 'morphology': return 'Morphology';
+    case 'outlining': return 'Outlining';
+    case 'brainstorming': return 'Brainstorming';
+    case 'email': return 'Email etiquette';
+    case 'interference': return 'Interference & Code-mixing';
+    case 'literature': return 'Literature';
+    default: return 'General';
+  }
+}
+
+function onAnswer(idx, choice, optEl, cardEl){
+  if (!started) start();
+  const d = DATA[idx];
+  const prev = answered.get(idx);
+  const correct = (choice === d.c);
+
+  // mark selected
+  const allOpts = cardEl.querySelectorAll('.opt');
+  allOpts.forEach(o => o.classList.remove('correct','wrong'));
+
+  if (examMode){
+    // store but don’t show correctness yet
+    answered.set(idx, {choice, correct});
+  } else {
+    // immediate feedback
+    if (correct) {
+      optEl.classList.add('correct');
+    } else {
+      optEl.classList.add('wrong');
+      // also highlight the correct one
+      const rightOpt = allOpts[d.c];
+      rightOpt.classList.add('correct');
+    }
+    answered.set(idx, {choice, correct});
+    const why = cardEl.querySelector('.explain');
+    if (why && WHY[d.n]) why.style.display = 'block';
+  }
+
+  el('#progress').textContent = `${answered.size} / ${DATA.length}`;
+  updateScore();
+
+  // if all answered in exam mode, reveal
+  if (examMode && answered.size === DATA.length){
+    revealAll();
+    stopTimer();
+  }
+}
+
+function updateScore(){
+  let got = 0;
+  answered.forEach(v => { if (v.correct) got++; });
+  if (answered.size === 0){
+    el('#score').textContent = 'Score: —';
+  } else {
+    const pct = Math.round(100 * got / DATA.length);
+    el('#score').textContent = `Score: ${got}/${DATA.length} (${pct}%)`;
+  }
+}
+
+function revealAll(){
+  document.querySelectorAll('.card').forEach(card=>{
+    const idx = Number(card.dataset.index);
+    const d = DATA[idx];
+    const state = answered.get(idx);
+    if (!state) return;
+    const all = card.querySelectorAll('.opt');
+    all.forEach((o,i)=>{
+      o.classList.remove('correct','wrong');
+      if (i === d.c) o.classList.add('correct');
+      if (state.choice === i && i !== d.c) o.classList.add('wrong');
+    });
+    const why = card.querySelector('.explain');
+    if (why && WHY[d.n]) why.style.display = 'block';
+  });
+}
+
+function start(){
+  started = true;
+  startTimer();
+}
+
+function hardReset(){
+  answered.clear();
+  started = false;
+  stopTimer();
+  el('#timer').textContent = '00:00';
+  render();
+}
+
+el('#start').addEventListener('click', ()=>{
+  if (!started) start();
+});
+
+el('#shuffle').addEventListener('click', ()=>{
+  shuffle();
+  render();
+});
+
+el('#reset').addEventListener('click', ()=>{
+  hardReset();
+});
+
+el('#mode').addEventListener('change', (e)=>{
+  examMode = (e.target.value === 'exam');
+  hardReset();
+});
+
+el('#filter').addEventListener('change', ()=>{
+  render();
+});
+
+el('#search').addEventListener('input', ()=>{
+  render();
+});
+
+// initial
+render();
+</script>
+</body>
+</html>
